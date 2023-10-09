@@ -39,18 +39,18 @@ def publish_message():
       # This method returns True/False as well
       # as the video frame.
       #start = time.time()
-      camera.capture(frame,format='rgb', use_video_port=True)
+      camera.capture(frame,format='bgr', use_video_port=True)
       stamp = rospy.Time.now()
       id = id+1
-      img = frame.array()
+      img = frame.array
       #end = time.time()
       #print('Time for image capture: ', end-start)
          
-      if  (img):
+      if  (img.size):
         #Print debugging information to the terminal
         #rospy.loginfo('[%s]publishing video frame-%s',stamp, id)
-        npImg = np.array(img)
-        frameMsg.data = np.array(cv2.imencode('.jpg', npImg)).tostring()
+        #npImg = np.array(img)
+        frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
         frameMsg.header.stamp = stamp
         # Publish the image.
         print('fps: ',id/ (time.time()-start))
