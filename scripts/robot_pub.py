@@ -42,7 +42,7 @@ def publish_message():
       camera.capture(frame,format='rgb', use_video_port=True)
       stamp = rospy.Time.now()
       id = id+1
-      img = np.array(frame.getvalue())
+      img = frame.getvalue()
       #end = time.time()
       #print('Time for image capture: ', end-start)
          
