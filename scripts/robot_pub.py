@@ -1,5 +1,6 @@
 from sensor_msgs.msg import CompressedImage
 from picamera import PiCamera
+from picamera.array import PiRGBArray
 import rospy
 import time
 import cv2
@@ -24,7 +25,7 @@ def publish_message():
   camera.framerate = 60
   camera.resolution = (640, 480)
   # Object for captured frame
-  frame = PiCamera.array.PiRGBArray(camera,size=(640,480))
+  frame = PiRGBArray(camera,size=(640,480))
   frameMsg = CompressedImage()
   frameMsg.format = 'jpeg'
   id = 1
