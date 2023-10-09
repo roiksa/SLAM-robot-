@@ -27,11 +27,7 @@ def publish_message():
   # Object for captured frame
   frame = io.BytesIO()
   frameMsg = CompressedImage()
-  frameMsg.height = 480
-  frameMsg.width = 640
-  frameMsg.encoding = 'rgb8'
   frameMsg.format = 'jpeg'
-  frameMsg.step = 1920
   id = 1
   start = time.time()
  
