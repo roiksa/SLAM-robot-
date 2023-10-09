@@ -53,7 +53,7 @@ def publish_message():
       if  (img):
         #Print debugging information to the terminal
         #rospy.loginfo('[%s]publishing video frame-%s',stamp, id)
-        frameMsg.data = cv2.imencode()
+        frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
         frameMsg.header.stamp = stamp
         # Publish the image.
         print('fps: ',id/ (time.time()-start))
