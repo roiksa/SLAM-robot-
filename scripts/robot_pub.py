@@ -1,4 +1,3 @@
-import io
 from sensor_msgs.msg import CompressedImage
 from picamera import PiCamera
 import rospy
@@ -18,14 +17,14 @@ def publish_message():
   rospy.init_node('robot_pub', anonymous=True)
      
   # Go through the loop 15 times per second
-  rate = rospy.Rate(30) # 15hz
+  rate = rospy.Rate(60) # 15hz
 
   #Camera initialization
   camera = PiCamera()
-  camera.framerate = 15
+  camera.framerate = 60
   camera.resolution = (640, 480)
   # Object for captured frame
-  frame = io.BytesIO()
+  frame = PiCamera.array.PiRGBArray(camera,size=(640,480))
   frameMsg = CompressedImage()
   frameMsg.format = 'jpeg'
   id = 1
@@ -49,8 +48,8 @@ def publish_message():
       if  (img):
         #Print debugging information to the terminal
         #rospy.loginfo('[%s]publishing video frame-%s',stamp, id)
-        #npImg = np.array(img)
-        frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
+        npImg = np.array(img)
+        frameMsg.data = np.array(cv2.imencode('.jpg', npImg)).tostring()
         frameMsg.header.stamp = stamp
         # Publish the image.
         print('fps: ',id/ (time.time()-start))
