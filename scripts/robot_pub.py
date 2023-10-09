@@ -28,43 +28,23 @@ def publish_message():
   frame = PiRGBArray(camera,size=(640,480))
   frameMsg = CompressedImage()
   frameMsg.format = 'jpeg'
-  id = 1
+  id = 0
   start = time.time()
- 
- 
-  # While ROS is still running.
-  while not rospy.is_shutdown():
-     
-      # Capture frame-by-frame
-      # This method returns True/False as well
-      # as the video frame.
-      #start = time.time()
-      camera.capture(frame,format='bgr', use_video_port=True)
+  try:
+    for frameCapture in camera.capture_continuous(frame, format = "bgr", use_video_port=True):
       stamp = rospy.Time.now()
       id = id+1
-      img = frame.array
-      #end = time.time()
-      #print('Time for image capture: ', end-start)
-         
-      if  (img.size):
-        #Print debugging information to the terminal
-        #rospy.loginfo('[%s]publishing video frame-%s',stamp, id)
-        #npImg = np.array(img)
-        frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
-        frameMsg.header.stamp = stamp
-        # Publish the image.
-        print('fps: ',id/ (time.time()-start))
-        pub.publish(frameMsg)
-      else :
-        rospy.loginfo('Camera Error')
-                   
-      # Sleep just enough to maintain the desired rate
-      #start = time.time()      
+      img = frameCapture.array
+      frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
+      frameMsg.header.stamp = stamp
+      # Publish the image.
+      print('fps: ',id/ (time.time()-start))
+      pub.publish(frameMsg)
       frame.truncate(0)
-      frame.seek(0)
       rate.sleep()
-      #end = time.time()
-      #print('Time for frame clean: ', end-start)
+  except rospy.ROSInterruptException:
+      rospy.loginfo("Process Interrupted")
+      rospy.signal_shutdown("Process Interrupted")
 
          
 if __name__ == '__main__':
