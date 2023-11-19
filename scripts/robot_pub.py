@@ -23,32 +23,37 @@ def publish_message():
   #Camera initialization
   camera = PiCamera()
   camera.framerate = 60
-  camera.resolution = (640, 480)
+  camera.resolution = (1280, 720)
   # Object for captured frame
-  frame = PiRGBArray(camera,size=(640,480))
+  frame = PiRGBArray(camera,size=(1280,720))
   frameMsg = CompressedImage()
   frameMsg.format = 'jpeg'
   id = 0
   start = time.time()
+
   try:
     for frameCapture in camera.capture_continuous(frame, format = "bgr", use_video_port=True):
       stamp = rospy.Time.now()
       id = id+1
       img = frameCapture.array
-      frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
+      frameMsg.data = np.array(cv2.imencode('.jpg', img)[1]).tostring()
       frameMsg.header.stamp = stamp
       # Publish the image.
+      #print(frameMsg)
+      #print(frameMsg.data)
       print('fps: ',id/ (time.time()-start))
       pub.publish(frameMsg)
       frame.truncate(0)
       rate.sleep()
-  except rospy.ROSInterruptException:
-      rospy.loginfo("Process Interrupted")
-      rospy.signal_shutdown("Process Interrupted")
+     # if KeyboardInterrupt:
+     #   print("Process Interrupted")
+     #   break
+  except KeyboardInterrupt:
+    print("Process Interrupted")
+    pass
+
+  
 
          
 if __name__ == '__main__':
-  try:
-    publish_message()
-  except rospy.ROSInterruptException:
-    pass
+  publish_message()
