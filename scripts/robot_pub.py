@@ -23,52 +23,37 @@ def publish_message():
   #Camera initialization
   camera = PiCamera()
   camera.framerate = 60
-  camera.resolution = (640, 480)
+  camera.resolution = (1280, 720)
   # Object for captured frame
-  frame = PiRGBArray(camera,size=(640,480))
+  frame = PiRGBArray(camera,size=(1280,720))
   frameMsg = CompressedImage()
   frameMsg.format = 'jpeg'
-  id = 1
+  id = 0
   start = time.time()
- 
- 
-  # While ROS is still running.
-  while not rospy.is_shutdown():
-     
-      # Capture frame-by-frame
-      # This method returns True/False as well
-      # as the video frame.
-      #start = time.time()
-      camera.capture(frame,format='bgr', use_video_port=True)
+
+  try:
+    for frameCapture in camera.capture_continuous(frame, format = "bgr", use_video_port=True):
       stamp = rospy.Time.now()
       id = id+1
-      img = frame.array
-      #end = time.time()
-      #print('Time for image capture: ', end-start)
-         
-      if  (img.size):
-        #Print debugging information to the terminal
-        #rospy.loginfo('[%s]publishing video frame-%s',stamp, id)
-        #npImg = np.array(img)
-        frameMsg.data = np.array(cv2.imencode('.jpg', img)).tostring()
-        frameMsg.header.stamp = stamp
-        # Publish the image.
-        print('fps: ',id/ (time.time()-start))
-        pub.publish(frameMsg)
-      else :
-        rospy.loginfo('Camera Error')
-                   
-      # Sleep just enough to maintain the desired rate
-      #start = time.time()      
+      img = frameCapture.array
+      frameMsg.data = np.array(cv2.imencode('.jpg', img)[1]).tostring()
+      frameMsg.header.stamp = stamp
+      # Publish the image.
+      #print(frameMsg)
+      #print(frameMsg.data)
+      print('fps: ',id/ (time.time()-start))
+      pub.publish(frameMsg)
       frame.truncate(0)
-      frame.seek(0)
       rate.sleep()
-      #end = time.time()
-      #print('Time for frame clean: ', end-start)
+     # if KeyboardInterrupt:
+     #   print("Process Interrupted")
+     #   break
+  except KeyboardInterrupt:
+    print("Process Interrupted")
+    pass
+
+  
 
          
 if __name__ == '__main__':
-  try:
-    publish_message()
-  except rospy.ROSInterruptException:
-    pass
+  publish_message()

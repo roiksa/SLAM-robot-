@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="proto2" type="robot_pub.py" name="camera_publisher" output="screen"/>
+    <node pkg="proto2" type="TCamPub.py" name="thermal_cam_publisher" output="screen"/>
+</launch>    
